@@ -5,6 +5,7 @@ Tune the optical bench.
 2004-07-17 K. Hanson (kael.hanson@icecube.wisc.edu)
 $Id: tune-optics,v 1.2 2004/07/30 02:29:45 kaeld Exp $
 """
+from __future__ import print_function
 
 import sys, time, os
 from icecube.domtest.lightsource import pulser, Digikrom, FilterWheel
@@ -35,31 +36,31 @@ def rate(qlist):
         id = q.getId()
         t[id] = ThreadedQ(q)
         t[id].start()
-    for id in t.keys():
+    for id in list(t.keys()):
         t[id].join()
         r[id] = t[id].rate
     return r
 
 def print_rates(r):
     hdr = ''
-    ids = r.keys()
+    ids = list(r.keys())
     for x in ids:
         hdr = hdr + x + ' '
-    print hdr
+    print(hdr)
     txt = '' 
     for x in ids:
         txt = txt + ("%12.1f" % (r[x])) + ' '
-    print txt
+    print(txt)
     
 drv = Driver()
 drv.discover_doms()
 q = [ ]
 
-for loc in drv.doms.values():
+for loc in list(drv.doms.values()):
     devfile = "/dev/dhc%dw%dd%s" % loc
     qnx = ibx(devfile)
     q.append(qnx)
-    print "Adding DOM", qnx.getId(), "to run."
+    print("Adding DOM", qnx.getId(), "to run.")
     configDefault(qnx, hvon=1)
     qnx.setSPEDeadtime(6)
 
@@ -76,7 +77,7 @@ print_rates(baseline)
 for pos in range(1,5):
     fw.setPosition(pos)
     time.sleep(5.0)
-    print "Filter Wheel position:", fw.queryPosition()
+    print("Filter Wheel position:", fw.queryPosition())
 
     p.syncOn()
     p.setPulseFrequency(10000)
